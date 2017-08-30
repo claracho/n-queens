@@ -125,8 +125,12 @@
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       var diagonal = [];
-      for (var i = 0; i < this.get('n'); i++) {
-        diagonal.push(this.get(i)[(majorDiagonalColumnIndexAtFirstRow + i) % 3]);
+      var startingPt = (majorDiagonalColumnIndexAtFirstRow < 0) ? Math.abs(majorDiagonalColumnIndexAtFirstRow) : 0;
+      var endingPt = (majorDiagonalColumnIndexAtFirstRow < 0) ? this.get('n') : this.get('n') - majorDiagonalColumnIndexAtFirstRow;
+      // console.log('start/end', startingPt, endingPt);
+      for (var i = startingPt; i < endingPt; i++) {
+        diagonal.push(this.get(i)[(majorDiagonalColumnIndexAtFirstRow + i) % this.get('n')]);
+        // console.log(i,(majorDiagonalColumnIndexAtFirstRow + i) % this.get('n'));
       }
       return diagonal.reduce((acc, val) => acc + val) > 1;
     },
@@ -134,7 +138,8 @@
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var test = [];
-      for (var i = 0; i < this.get('n'); i++) {
+      // run from 0-n+1 to n-1
+      for (var i = 0 - this.get('n') + 1; i < this.get('n'); i++) {
         test.push(this.hasMajorDiagonalConflictAt(i));
       }
       return test.includes(true) ? true : false;
@@ -147,12 +152,24 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var diagonal = [];
+      var startingPt = (minorDiagonalColumnIndexAtFirstRow < this.get('n')) ? 0 : minorDiagonalColumnIndexAtFirstRow + 1 - this.get('n');
+      var endingPt = (minorDiagonalColumnIndexAtFirstRow < this.get('n')) ? minorDiagonalColumnIndexAtFirstRow + 1 : this.get('n');
+
+      for (var i = startingPt; i < endingPt; i++) {
+        diagonal.push(this.get(i)[minorDiagonalColumnIndexAtFirstRow - i]);
+      }
+      return diagonal.reduce((acc, val) => acc + val) > 1;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var test = [];
+      // run from 0-n+1 to n-1
+      for (var i = 0; i < 2 * this.get('n') - 1; i++) {
+        test.push(this.hasMinorDiagonalConflictAt(i));
+      }
+      return test.includes(true) ? true : false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
