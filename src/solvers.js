@@ -13,6 +13,8 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 window.findNRooksSolution = function(n) {
+
+/* FIND ALL SOLUTIONS
   var oldN = n;
   var solution = []; // solution continas all the valid matrices of 0s and 1s for n Rooks
   
@@ -58,17 +60,20 @@ window.findNRooksSolution = function(n) {
 
   // for one solution, return solution[0]
   return solution[0];
+*/
+
+
 
   // SIMPLE VERSION
-  // var mx = new Array(n);
-  // for (var i = 0; i < mx.length; i++) {
-  //   mx[i] = new Array(n);
-  // }
-  // mx.forEach(e => e.fill(0));
-  // for (var i = 0; i < n; i++) {
-  //   mx[i][i] = 1;
-  // }
-  // return mx;
+  var mx = new Array(n);
+  for (var i = 0; i < mx.length; i++) {
+    mx[i] = new Array(n);
+  }
+  mx.forEach(e => e.fill(0));
+  for (var i = 0; i < n; i++) {
+    mx[i][i] = 1;
+  }
+  return mx;
 
 };
 
