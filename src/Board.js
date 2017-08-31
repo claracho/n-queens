@@ -78,8 +78,8 @@
     // --------------------------------------------------------------
     //
     // test if a specific row on this board contains a conflict
-    hasRowConflictAt: function(rowIndex) {  // array
-      var sum = rowIndex.reduce(function(acc, val) {
+    hasRowConflictAt: function(rowIndex) {  // index
+      var sum = this.get(rowIndex).reduce(function(acc, val) {
         return acc + val;
       });
       return (sum > 1) ? true : false;
@@ -89,7 +89,7 @@
     hasAnyRowConflicts: function() {
       var test = [];
       for (var i = 0; i < this.get('n'); i++) {
-        test.push(this.hasRowConflictAt(this.get(i)));
+        test.push(this.hasRowConflictAt(i));
       }
       return test.includes(true) ? true : false;
     },
