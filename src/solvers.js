@@ -117,7 +117,8 @@ window.countNRooksSolutions = function(n) {
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   var oldN = n;
-  var solution = []; // solution continas all the valid matrices of 0s and 1s for n Queens
+  var rcSolution = []; // solution continas all the valid matrices of 0s and 1s for n Queens
+  var solution = [];
 
   // Using the same permutation logic from nRooks, we now check to make sure there are no diagonal conflicts
   // for a possible row (oldN - n) and column (i), we calculate their major diagonal index (col + row) and
@@ -157,7 +158,16 @@ window.findNQueensSolution = function(n) {
 
   permute(n);
 
+  if (!solution[0]) {
+    solution[0] = [];
+    for (var i = 0; i < oldN; i++) {
+      solution[0][i] = [];
+    }
+  }
+
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution[0]));
+  // return empty array if no solution exists 
+  
   return solution[0];
 };
 
