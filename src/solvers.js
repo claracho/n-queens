@@ -19,12 +19,13 @@ window.findNRooksSolution = function(n) {
   // we can use permutation to find out how many ways n rooks can be placed in a n x n matrix 
   // since rooks cannot be horizontally or diagonally exist together
   // their row index and column index must be unique for a solution to be valid 
-  // this can then be simplified into a permutation question with n! solutions
+  // this can then be simplified into a permutation problem with n! solutions
   var permute = function(n, input = []) {
     // base case, push result to solution
     if (n === 0) {
       var matrix = [];
       input.forEach(function(val) {
+        // convert val (corresponds to column index of rook at row i) to [1, 0, 0] format
         var row = [];
         for (var i = 0; i < oldN; i++) {
           if (val === i) {
@@ -36,14 +37,18 @@ window.findNRooksSolution = function(n) {
         matrix.push(row);
       });
       solution.push(matrix);
-    } else if (n > 0) { // recursive case
+    // recursive case
+    } else if (n > 0) {
       for (var i = 0; i < oldN; i++) {
+        // only recurse if i is not already contained in input array
+        // this allows us find solutions that contain unique values
         if (!input.includes(i)) {
-          permute(n-1, input.concat(i));
+          permute(n - 1, input.concat(i));
         }
       }
     }
-  }
+  };
+
   permute(n);
   
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution[0]));
@@ -54,7 +59,7 @@ window.findNRooksSolution = function(n) {
   // for one solution, return solution[0]
   return solution[0];
 
-  // simpler solution:
+  // SIMPLE VERSION
   // var mx = new Array(n);
   // for (var i = 0; i < mx.length; i++) {
   //   mx[i] = new Array(n);
@@ -70,24 +75,25 @@ window.findNRooksSolution = function(n) {
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
 
-  // there are n^2 ways to place the first rook, (n-1)^2 ways to place the second rook, and so on so in total
-  // (n^2)*((n-1)^2)*((n-2)^2)*...*(1^2) ways to place n rooks in n x n matrix.  However, since they are indistinguishable,
-  // we divide them by n! which is the number of ways n rooks can permuted to be unique, and we divide it since they are NOT
-  // unique.  n! effectively cancels out squares, so the solution becomes n!.
+  // there are n^2 ways to place the first rook in n x n matrix, (n-1)^2 ways to place the second rook in n-1 by n-1 slots
+  // that do not create conflict with the first rook, and so on, so in total we have (n^2)*((n-1)^2)*((n-2)^2)*...*(1^2) ways
+  // to place n rooks in n x n matrix.  However, since the rooks are indistinguishable, we have duplicate solutions, so we
+  // we divide them by n! which is the number of ways you can place n in a line if they are distinguishable.  The solution 
+  // then becomes n!.
 
-  // implementation of n!
-  var factorial = function(n){
+  // efficient implementation of calculating n!
+  var factorial = function(n) {
     if (n === 0) {
       return 1;
     }
-    return n * factorial(n-1);
-  }
+    return n * factorial(n - 1);
+  };
   var solutionCount = factorial(n);
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 
-  // longer version
+  // LONGER VERSION using permutation
   // var oldN = n;
   // var solutionCount = 0;
   // var permute = function(n, input = []) {
@@ -97,11 +103,11 @@ window.countNRooksSolutions = function(n) {
   //   } else if (n > 0) { // recursive case
   //     for (var i = 0; i < oldN; i++) {
   //       if (!input.includes(i)) {
-  //         permute(n-1, input.concat(i));
+  //         permute(n - 1, input.concat(i));
   //       }
   //     }
   //   }
-  // }
+  // };
   // permute(n);
 
   // console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
@@ -110,10 +116,48 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var oldN = n;
+  var solution = []; // solution continas all the valid matrices of 0s and 1s for n Rooks
 
+  // we can use permutation to find out how many ways n rooks can be placed in a n x n matrix 
+  // since rooks cannot be horizontally or diagonally exist together
+  // their row index and column index must be unique for a solution to be valid 
+  // this can then be simplified into a permutation problem with n! solutions
+  var permute = function(n, input = [], majorDiag = [], minorDiag = []) {
+    // base case, push result to solution
+    if (n === 0) {
+      var matrix = [];
+      input.forEach(function(val) {
+        // convert val (corresponds to column index of rook at row i) to [1, 0, 0] format
+        var row = [];
+        for (var i = 0; i < oldN; i++) {
+          if (val === i) {
+            row.push(1);
+          } else {
+            row.push(0);
+          }
+        }
+        matrix.push(row);
+      });
+      solution.push(matrix);
+
+    // recursive case
+    } else if (n > 0) {
+      for (var i = 0; i < oldN; i++) {
+        var major = i + (oldN - n);
+        var minor = i - (oldN - n);
+        // only recurse if i is not already contained in input array
+        // this allows us find solutions that contain unique values
+        if (!(input.includes(i) || majorDiag.includes(major) || minorDiag.includes(minor))) {
+          permute(n - 1, input.concat(i), majorDiag.push(major), minorDiag.push(minor));
+        }
+      }
+    }
+  };
+
+  permute(n);
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  return solution[0];
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
