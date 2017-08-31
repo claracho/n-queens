@@ -117,12 +117,13 @@ window.countNRooksSolutions = function(n) {
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   var oldN = n;
-  var solution = []; // solution continas all the valid matrices of 0s and 1s for n Rooks
+  var solution = []; // solution continas all the valid matrices of 0s and 1s for n Queens
 
-  // we can use permutation to find out how many ways n rooks can be placed in a n x n matrix 
-  // since rooks cannot be horizontally or diagonally exist together
-  // their row index and column index must be unique for a solution to be valid 
-  // this can then be simplified into a permutation problem with n! solutions
+  // Using the same permutation logic from nRooks, we now check to make sure there are no diagonal conflicts
+  // for a possible row (oldN - n) and column (i), we calculate their major diagonal index (col + row) and
+  // minor diagonal index (col - row).  If this same major/diag index is already occupied by the queen, we
+  // don't pursue that route anymore, if no queen is occupied, we further pursue that route and pass on
+  // major/minor diagonal indices
   var permute = function(n, input = [], majorDiag = [], minorDiag = []) {
     // base case, push result to solution
     if (n === 0) {
@@ -146,23 +147,48 @@ window.findNQueensSolution = function(n) {
       for (var i = 0; i < oldN; i++) {
         var major = i + (oldN - n);
         var minor = i - (oldN - n);
-        // only recurse if i is not already contained in input array
-        // this allows us find solutions that contain unique values
+        // only recurse if i is not already contained in input array and major/minor diagonals are not occupied
         if (!(input.includes(i) || majorDiag.includes(major) || minorDiag.includes(minor))) {
-          permute(n - 1, input.concat(i), majorDiag.push(major), minorDiag.push(minor));
+          permute(n - 1, input.concat(i), majorDiag.concat(major), minorDiag.concat(minor));
         }
       }
     }
   };
 
   permute(n);
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+
+  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution[0]));
   return solution[0];
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+  var oldN = n;
+
+  // Using the same permutation logic from nRooks, we now check to make sure there are no diagonal conflicts
+  // for a possible row (oldN - n) and column (i), we calculate their major diagonal index (col + row) and
+  // minor diagonal index (col - row).  If this same major/diag index is already occupied by the queen, we
+  // don't pursue that route anymore, if no queen is occupied, we further pursue that route and pass on
+  // major/minor diagonal indices
+  var permute = function(n, input = [], majorDiag = [], minorDiag = []) {
+    // base case, push result to solution
+    if (n === 0) {
+      solutionCount++;
+    // recursive case
+    } else if (n > 0) {
+      for (var i = 0; i < oldN; i++) {
+        var major = i + (oldN - n);
+        var minor = i - (oldN - n);
+        // only recurse if i is not already contained in input array and major/minor diagonals are not occupied
+        if (!(input.includes(i) || majorDiag.includes(major) || minorDiag.includes(minor))) {
+          permute(n - 1, input.concat(i), majorDiag.concat(major), minorDiag.concat(minor));
+        }
+      }
+    }
+  };
+
+  permute(n);
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
